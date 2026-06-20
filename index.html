@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Silent DJ TECH</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== ALL STYLES ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: #0A0D1A;
+      color: #fff;
+      line-height: 1.6;
+    }
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 700;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.5s ease;
+      font-size: 14px;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #00FF41; color: #0A0D1A; }
+    .toast.error { background: #FF2D2D; }
+    .toast.info { background: #0088FF; }
+
+    /* NAV */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 50px;
+      background: rgba(10, 13, 26, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #FF2D2D, #00FF41, #0088FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    nav ul a {
+      color: #ccc;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+    nav ul a:hover { color: #00FF41; }
+    .auth-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-primary, .btn-outline, .btn-secondary {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s;
+      font-size: 14px;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #00FF41, #0088FF);
+      color: #0A0D1A;
+      box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    }
+    .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 255, 65, 0.5); }
+    .btn-outline {
+      background: transparent;
+      color: #fff;
+      border: 2px solid #00FF41;
+    }
+    .btn-outline:hover { background: #00FF41; color: #0A0D1A; }
+    .btn-secondary {
+      background: #FF2D2D;
+      color: #fff;
+    }
+    .btn-secondary:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 45, 45, 0.5); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 50px 20px;
+      background: radial-gradient(ellipse at 50% 50%, #0A1A2A, #0A0D1A);
+    }
+    .hero-content h1 {
+      font-size: 72px;
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #FF2D2D, #00FF41, #0088FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      0% { text-shadow: 0 0 20px rgba(0, 255, 65, 0.3); }
+      100% { text-shadow: 0 0 60px rgba(0, 255, 65, 0.8); }
+    }
+    .subtitle { font-size: 24px; color: #aaa; margin-bottom: 30px; }
+    .hero-buttons { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+    .stats { display: flex; gap: 40px; justify-content: center; font-size: 18px; color: #00FF41; flex-wrap: wrap; }
+
+    /* SECTIONS */
+    section { padding: 80px 50px; max-width: 1200px; margin: 0 auto; }
+    h2 {
+      font-size: 48px;
+      text-align: center;
+      margin-bottom: 50px;
+      background: linear-gradient(90deg, #FF2D2D, #00FF41, #0088FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* FEATURES */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+    }
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 65, 0.2);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 40px rgba(0, 255, 65, 0.2);
+      border-color: #00FF41;
+    }
+    .feature-card .icon { font-size: 48px; margin-bottom: 15px; }
+
+    /* PRICING */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+    .pricing-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 65, 0.2);
+      border-radius: 16px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .pricing-card.featured {
+      border-color: #00FF41;
+      box-shadow: 0 0 40px rgba(0, 255, 65, 0.2);
+    }
+    .pricing-card .price { font-size: 36px; font-weight: 700; color: #00FF41; margin: 20px 0; }
+    .pricing-card .price span { font-size: 16px; color: #aaa; }
+    .pricing-card ul { list-style: none; margin: 20px 0; }
+    .pricing-card ul li { padding: 8px 0; color: #ccc; }
+
+    /* DEPLOY */
+    .deploy-form { max-width: 600px; margin: 0 auto; }
+    .deploy-form label { display: block; margin: 20px 0 10px; color: #00FF41; }
+    .deploy-form input, .deploy-form textarea {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 65, 0.3);
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .terminal {
+      background: #0A0A0A;
+      border: 1px solid #00FF41;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      font-family: monospace;
+      font-size: 12px;
+      min-height: 100px;
+      color: #00FF41;
+      overflow-y: auto;
+    }
+
+    /* COINS */
+    .coin-packages {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .coin-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 65, 0.2);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+    }
+
+    /* GAME */
+    .game-container { max-width: 600px; margin: 0 auto; text-align: center; }
+    #gameCanvas {
+      background: #0A0A0A;
+      border: 2px solid #00FF41;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+    }
+    .game-controls {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+    .game-controls input {
+      width: 80px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 65, 0.3);
+      border-radius: 8px;
+      color: #fff;
+      text-align: center;
+    }
+    #gameResult { margin-top: 15px; font-size: 18px; font-weight: 700; color: #00FF41; }
+
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal.show { display: flex; }
+    .modal-content {
+      background: #0A0D1A;
+      border: 1px solid #00FF41;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 0 60px rgba(0, 255, 65, 0.2);
+    }
+    .modal-content h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 65, 0.3);
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .modal-content .btn-primary {
+      width: 100%;
+      margin-top: 10px;
+    }
+    .modal-close {
+      float: right;
+      color: #FF2D2D;
+      font-size: 28px;
+      cursor: pointer;
+    }
+    .modal-close:hover { color: #00FF41; }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 30px;
+      border-top: 1px solid rgba(0, 255, 65, 0.2);
+      color: #666;
+      font-size: 14px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { flex-direction: column; padding: 15px 20px; }
+      nav ul { justify-content: center; gap: 10px; }
+      .hero-content h1 { font-size: 40px; }
+      .subtitle { font-size: 18px; }
+      .stats { flex-direction: column; gap: 10px; }
+      h2 { font-size: 32px; }
+      section { padding: 40px 20px; }
+      .feature-grid, .pricing-grid { grid-template-columns: 1fr; }
+      .hero-buttons { flex-direction: column; align-items: center; }
+    }
+
+    /* User info in navbar */
+    #userInfo {
+      color: #00FF41;
+      font-size: 14px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div id="toast" class="toast"></div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav>
+    <div class="logo">🎧 Silent DJ TECH</div>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#deploy">Deploy</a></li>
+      <li><a href="#coins">Coins</a></li>
+      <li><a href="#game">Game</a></li>
+    </ul>
+    <div class="auth-buttons">
+      <span id="userInfo"></span>
+      <a href="#" class="btn-outline" id="loginBtn">Login</a>
+      <a href="#" class="btn-primary" id="registerBtn">Sign Up</a>
+      <a href="#" class="btn-secondary" id="logoutBtn" style="display:none;">Logout</a>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section id="home" class="hero">
+    <div class="hero-content">
+      <h1>Silent DJ TECH</h1>
+      <p class="subtitle">Host your WhatsApp bot — pay in your currency, deploy in one click.</p>
+      <div class="hero-buttons">
+        <a href="#deploy" class="btn-primary">🚀 Deploy Now</a>
+        <a href="#features" class="btn-outline">Learn More</a>
+      </div>
+      <div class="stats">
+        <span>🔥 500+ Bots Deployed</span>
+        <span>⚡ 99.99% Uptime</span>
+        <span>🌍 10+ Currencies</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES ===== -->
+  <section id="features" class="features">
+    <h2>⚡ Features</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon">🚀</div>
+        <h3>One-Click Deploy</h3>
+        <p>Deploy your bot from GitHub in seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">💰</div>
+        <h3>Multi-Currency</h3>
+        <p>Pay in TZS, KES, USD, and more.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🎮</div>
+        <h3>Aviator Game</h3>
+        <p>Win coins and level up.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📊</div>
+        <h3>Live Logs</h3>
+        <p>Real-time bot logs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PRICING ===== -->
+  <section id="pricing" class="pricing">
+    <h2>💎 Pricing</h2>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <h3>Basic</h3>
+        <p class="price">$5<span>/mo</span></p>
+        <ul>
+          <li>1 Bot</li>
+          <li>Basic Support</li>
+          <li>24/7 Uptime</li>
+        </ul>
+        <a href="#coins" class="btn-primary">Buy Now</a>
+      </div>
+      <div class="pricing-card featured">
+        <h3>Pro</h3>
+        <p class="price">$15<span>/mo</span></p>
+        <ul>
+          <li>5 Bots</li>
+          <li>Priority Support</li>
+          <li>Live Logs</li>
+        </ul>
+        <a href="#coins" class="btn-primary">Buy Now</a>
+      </div>
+      <div class="pricing-card">
+        <h3>Enterprise</h3>
+        <p class="price">$50<span>/mo</span></p>
+        <ul>
+          <li>Unlimited Bots</li>
+          <li>Dedicated Support</li>
+          <li>Custom Features</li>
+        </ul>
+        <a href="#coins" class="btn-primary">Buy Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DEPLOY ===== -->
+  <section id="deploy" class="deploy">
+    <h2>🚀 Deploy Your Bot</h2>
+    <div class="deploy-form">
+      <label>GitHub Repository URL</label>
+      <input type="url" id="repoUrl" value="https://github.com/djsilayo665-cpu/silent-dj" />
+      <label>Environment Variables</label>
+      <textarea id="envVars" rows="4">SESSION_ID=your_session_here
+OWNER_NUMBER=255768192847
+BOT_NAME=Silent DJ</textarea>
+      <button class="btn-primary" onclick="startDeploy()">Deploy Bot</button>
+      <div id="deploy-log" class="terminal">
+        <div>⏳ Ready to deploy...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COINS ===== -->
+  <section id="coins" class="coins">
+    <h2>💰 Buy Coins</h2>
+    <p>Send payment to <strong>255768192847</strong> (djsilayo)</p>
+    <div class="coin-packages">
+      <div class="coin-card">
+        <h3>100 Coins</h3>
+        <p>$1.00 / 2,500 TZS</p>
+        <button class="btn-primary" onclick="buyCoins(100)">Buy</button>
+      </div>
+      <div class="coin-card">
+        <h3>500 Coins</h3>
+        <p>$4.50 / 11,000 TZS</p>
+        <button class="btn-primary" onclick="buyCoins(500)">Buy</button>
+      </div>
+      <div class="coin-card">
+        <h3>1000 Coins</h3>
+        <p>$8.00 / 20,000 TZS</p>
+        <button class="btn-primary" onclick="buyCoins(1000)">Buy</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GAME ===== -->
+  <section id="game" class="game">
+    <h2>🎲 Aviator</h2>
+    <div class="game-container">
+      <canvas id="gameCanvas" width="400" height="300"></canvas>
+      <div class="game-controls">
+        <label>Bet (Coins)</label>
+        <input type="number" id="betAmount" value="10" />
+        <button class="btn-primary" onclick="startGame()">🚀 Bet</button>
+        <button class="btn-secondary" onclick="cashOut()">💸 Cash Out</button>
+        <p id="gameResult">Place your bet...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== LOGIN MODAL ===== -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal('loginModal')">&times;</span>
+      <h2>🔐 Login</h2>
+      <input type="email" id="loginEmail" placeholder="Email" />
+      <input type="password" id="loginPassword" placeholder="Password" />
+      <button class="btn-primary" onclick="handleLogin()">Login</button>
+      <p style="margin-top:15px;font-size:12px;color:#aaa;">Demo: use any email + password</p>
+    </div>
+  </div>
+
+  <!-- ===== REGISTER MODAL ===== -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal('registerModal')">&times;</span>
+      <h2>📝 Sign Up</h2>
+      <input type="email" id="registerEmail" placeholder="Email" />
+      <input type="password" id="registerPassword" placeholder="Password" />
+      <button class="btn-primary" onclick="handleRegister()">Create Account</button>
+      <p style="margin-top:15px;font-size:12px;color:#aaa;">Already have an account? <a href="#" onclick="openModal('loginModal');closeModal('registerModal')">Login</a></p>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>Built by <strong>djsilayo</strong> — Payment: <strong>255768192847</strong></p>
+    <p>© 2026 Silent DJ TECH. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // ===== TOAST =====
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast ' + type + ' show';
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // ===== MODALS =====
+    function openModal(id) { document.getElementById(id).classList.add('show'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+    document.getElementById('loginBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('loginModal');
+    });
+    document.getElementById('registerBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('registerModal');
+    });
+
+    // Close modal on outside click
+    document.querySelectorAll('.modal').forEach(m => {
+      m.addEventListener('click', (e) => {
+        if (e.target === m) m.classList.remove('show');
+      });
+    });
+
+    // ===== AUTH (localStorage) =====
+    function getUsers() {
+      try { return JSON.parse(localStorage.getItem('silentdj_users')) || {}; }
+      catch { return {}; }
+    }
+    function saveUsers(users) { localStorage.setItem('silentdj_users', JSON.stringify(users)); }
+
+    function getCurrentUser() {
+      try { return JSON.parse(localStorage.getItem('silentdj_current_user')); }
+      catch { return null; }
+    }
+    function setCurrentUser(user) { localStorage.setItem('silentdj_current_user', JSON.stringify(user)); }
+
+    function updateUI() {
+      const user = getCurrentUser();
+      const userInfo = document.getElementById('userInfo');
+      const loginBtn = document.getElementById('loginBtn');
+      const registerBtn = document.getElementById('registerBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (user) {
+        userInfo.textContent = '👤 ' + user.email;
+        userInfo.style.display = 'inline';
+        loginBtn.style.display = 'none';
+        registerBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline';
+      } else {
+        userInfo.style.display = 'none';
+        loginBtn.style.display = 'inline';
+        registerBtn.style.display = 'inline';
+        logoutBtn.style.display = 'none';
+      }
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!email || !password) {
+        showToast('Please fill in all fields', 'error');
+        return;
+      }
+      const users = getUsers();
+      if (users[email] && users[email].password === password) {
+        setCurrentUser({ email });
+        closeModal('loginModal');
+        showToast('✅ Welcome back, ' + email + '!', 'success');
+        updateUI();
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+      } else {
+        showToast('❌ Invalid email or password', 'error');
+      }
+    }
+
+    function handleRegister() {
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+      if (!email || !password) {
+        showToast('Please fill in all fields', 'error');
+        return;
+      }
+      if (password.length < 4) {
+        showToast('Password must be at least 4 characters', 'error');
+        return;
+      }
+      const users = getUsers();
+      if (users[email]) {
+        showToast('❌ Email already registered', 'error');
+        return;
+      }
+      users[email] = { password };
+      saveUsers(users);
+      setCurrentUser({ email });
+      closeModal('registerModal');
+      showToast('✅ Account created! Welcome ' + email, 'success');
+      updateUI();
+      document.getElementById('registerEmail').value = '';
+      document.getElementById('registerPassword').value = '';
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
